@@ -18,20 +18,20 @@ static float tankX = 0;
 static float tankY = 0;
 static float rotateCount = 0;
 static float rotateCylinder = 0;
-
+static float prevPosition = 0.0f;
 bool isWire = false;
+
 struct vec3 {
-	GLdouble x;
-	GLdouble y;
-	GLdouble z;
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
 };
-
-
-
-
+vec3 camera = { 0.0, 5.0, 10.0 };
+vec3 center = { 0, 0, 0 };
+vec3 up = { 0, 1, 0 };
 void drawTankPart1(){
 	if (isWire){
-		glBegin(GL_LINES);
+		glBegin(GL_LINE_STRIP);
 	}
 	else{
 		glBegin(GL_QUADS);
@@ -82,7 +82,7 @@ void drawTankPart1(){
 }
 void drawTankPart2(){
 	if (isWire){
-		glBegin(GL_LINES);
+		glBegin(GL_LINE_STRIP);
 	}
 	else{
 		glBegin(GL_QUADS);
@@ -143,6 +143,10 @@ void myDisplay(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(camera.x, camera.y, camera.z, center.x, center.y, center.z, up.x, up.y, up.z);
 
 	glBegin(GL_LINES);
 	glVertex3f(0.0, 10.0f, 0.0);
@@ -160,17 +164,28 @@ void myDisplay(void)
 		drawTankPart1();
 	glPopMatrix();
 	
+
+
 	glPushMatrix();
-	glTranslatef(0 , 0, -tankX);
-	glRotatef(rotateCount, 0.0, 1.0, 0.0);
+	glTranslatef(0 , 0, tankX);
+	glRotatef(rotateCount, 0.0, 1.0, 0.0); //rotate
+	glTranslatef(0, 0, -tankX);
 	glTranslatef(0, 0, tankX);
 	drawTankPart2();
 	glPopMatrix();
 
+	
 	glPushMatrix();
-	glTranslatef(0, 0, -tankX);
-	//glRotatef(rotateCount, 0.0, 1.0, 0.0);
-	glTranslatef(-2.0f, 1.2f, tankX+1.0);
+	/*
+	glTranslatef(0.0f, 1.2f, tankX+1.5f);
+	glRotatef(rotateCylinder, 1.0, 0.0, 0.0);
+	glTranslatef(0.0f, -1.2f, -(tankX+1.5f));
+	*/
+
+	glTranslatef(0, 1.5f, tankX+1.5f);
+	glRotatef(rotateCount, 0.0, 1.0, 0.0); //rotate
+	glTranslatef(0, -1.5f, -(tankX+1.5f));
+	glTranslatef(0, 1.5f, tankX+1.5f);
 	drawTankPart3();
 	glPopMatrix();
 	
@@ -182,16 +197,23 @@ void myKeyboard(unsigned char key, int x, int y){
 	switch (key)
 	{
 		case 'f':
-			if (tankX < radisOfMap)
+			if (tankX < radisOfMap){
+				prevPosition = tankX;
 				tankX += 1.0;
+			}
 			break;
 		case 'b':
-			if (tankX > - radisOfMap)
+			if (tankX > -radisOfMap){
+				prevPosition = tankX;
 				tankX -= 1.0;
+			}
 			break;
 		case 'r':
 			tankX = 0.0;
 			tankY = 0.0;
+			rotateCount = 0.0;
+			rotateCylinder = 0.0;
+			prevPosition = 0.0;
 			break;
 		case 'w':
 			isWire = !isWire;
@@ -200,10 +222,23 @@ void myKeyboard(unsigned char key, int x, int y){
 			rotateCount += 10.0;
 			break;
 		case 'u':
-			rotateCylinder += 10.0;
+			rotateCylinder -= 10.0;
 			break;
 		case 'd':
-			rotateCylinder -= 10.0;
+			rotateCylinder += 10.0;
+			break;
+		case 'h':
+			camera.x += 1.0;
+			break;
+		case 'j':
+			camera.y += 1.0;
+			break;
+		case 'k':
+			camera.z += 1.0;
+			break;
+		case 'l':
+			camera.z -= 1.0f;
+			break;
 		default:
 			break;
 	}
@@ -229,12 +264,8 @@ void init(void)
 	gluPerspective(fov,aspect,zNear,zFar);
 
 
-	vec3 camera = {20,10,5};
-	vec3 center = {0,0,0};
-	vec3 up = {0,1,0};
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(camera.x, camera.y, camera.z, center.x, center.y, center.z, up.x, up.y, up.z);
+	
+	
 
 }
 
