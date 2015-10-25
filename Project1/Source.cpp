@@ -27,7 +27,7 @@ struct vec3 {
 	GLfloat y;
 	GLfloat z;
 };
-vec3 camera = { 10.0, 2.0, 0.0 };
+vec3 camera = { 20.0, 10.0, 5.0 };
 vec3 center = { 0, 0, 0 };
 vec3 up = { 0, 1, 0 };
 void drawTankPart1(){
@@ -196,7 +196,7 @@ void myKeyboard(unsigned char key, int x, int y){
 	switch (key)
 	{
 	case 'f':
-		if (tankX < radisOfMap){
+		if (tankX < radisOfMap - 3.0f ){
 			tankX += 1.0;
 		}
 		if (isFPS){
@@ -209,7 +209,7 @@ void myKeyboard(unsigned char key, int x, int y){
 		}
 		break;
 	case 'b':
-		if (tankX > -radisOfMap){
+		if (tankX > - ( radisOfMap-1.0f )){
 			tankX -= 1.0;
 		}
 		if (isFPS){
@@ -274,7 +274,10 @@ void myKeyboard(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 void myReshape(int width, int height){
-
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(fov, (GLfloat)width / (GLfloat)height, zNear, zFar);
 }
 
 void myAnimation(void){
