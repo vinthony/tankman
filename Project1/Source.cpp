@@ -182,23 +182,25 @@ void myDisplay(void)
 	drawGrid();
 	glPopMatrix();
 
-	//draw the tank part 1; and traslate the tank
+	//draw the tank part 1; and translate the tank
 	glPushMatrix();
 		glTranslatef(0, 0, tankZ);
 		drawTankPart1();
 	glPopMatrix();
 
+	//draw the tank part 2; and translate the tank part1&2 ,rotate part 2
+	//  trans * rotate * tans2 * tans1 * point
 	glPushMatrix();
-	glTranslatef(0 , 0, tankZ);
+	glTranslatef(0 , 0, tankZ); //trans
 	glRotatef(rotateCount, 0.0, 1.0, 0.0); //rotate
-	glTranslatef(0, 0, -tankZ);
-	glTranslatef(0, 0, tankZ);
-	drawTankPart2();
+	glTranslatef(0, 0, -tankZ); //tran1
+	glTranslatef(0, 0, tankZ); // tran2
+	drawTankPart2(); //point
 	glPopMatrix();
 
 	
+	//draw the tank part3, and translate the tank part1,2,3 ,rotate part2, rotate part3
 	glPushMatrix();
-	
 	glTranslatef(0.0f, 1.2f, tankZ+1.0f);
 	glRotatef(rotateCylinder, 1.0, 0.0, 0.0);
 	glTranslatef(0.0f, -1.2f, -(tankZ+1.0f));
@@ -208,7 +210,6 @@ void myDisplay(void)
 	glTranslatef(0, -1.2f, -tankZ);
 	glTranslatef(0, 1.2f, tankZ+1.0f);
 	drawTankPart3();
-	
 	glPopMatrix();
 	
 	glutSwapBuffers();
@@ -219,10 +220,10 @@ void myKeyboard(unsigned char key, int x, int y){
 	switch (key)
 	{
 	case 'f':
-		if (tankZ < radisOfMap - 3.0f ){
+		if (tankZ < radisOfMap - 3.0f ){ //border injection
 			tankZ += 1.0;
 		}
-		if (isFPS){
+		if (isFPS){ //set first-view camera position;
 			camera.x = 0.0;
 			camera.y = 3.0;
 			camera.z = tankZ;
@@ -232,7 +233,7 @@ void myKeyboard(unsigned char key, int x, int y){
 		}
 		break;
 	case 'b':
-		if (tankZ > - ( radisOfMap-1.0f )){
+		if (tankZ > - ( radisOfMap-1.0f )){ 
 			tankZ -= 1.0;
 		}
 		if (isFPS){
@@ -307,9 +308,9 @@ void myKeyboard(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 void myReshape(int width, int height){
-	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);  
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	glLoadIdentity(); //change the perspective;
 	gluPerspective(fov, (GLfloat)width / (GLfloat)height, zNear, zFar);
 }
 
