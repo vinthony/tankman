@@ -8,29 +8,42 @@
 
 
 using namespace std;
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-const double fov = 60.0;
-const float zNear = 0.1f;
-const float zFar = 100.0f;
-const float radisOfMap = 8.0;
-static float tankX = 0;
-static float tankY = 0;
-static float rotateCount = 0;
-static float rotateCylinder = 0;
-static float prevPosition = 0.0f;
-bool isWire = false;
-bool isFPS = false;
+const int SCREEN_WIDTH = 800; //define the screen width
+const int SCREEN_HEIGHT = 600; //define the screen height
+const double fov = 60.0; //define the original fov
+const float zNear = 0.1f; // define the z near location
+const float zFar = 100.0f; // define the z far location
+const float radisOfMap = 8.0; // define the half width of map
+static float tankZ = 0; //the  z position of tank
+static float rotateCount = 0; // part 2+3 rotate 
+static float rotateCylinder = 0; // part 3 up down rotate
+bool isWire = false; //  is wireframe mode 
+bool isFPS = false; // is first view
 
 struct vec3 {
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
 };
-vec3 camera = { 20.0, 10.0, 5.0 };
-vec3 center = { 0, 0, 0 };
-vec3 up = { 0, 1, 0 };
-void drawTankPart1(){
+vec3 camera = { 9.0, 6.0, 10.0 }; // the init camera position
+vec3 center = { 0, 0, 0 }; // the camera look center
+vec3 up = { 0, 1, 0 };  // the upward vector
+void colorDeepGreen(){
+	glColor3f(0.09, 0.63, 0.52);
+}
+void colorGreen(){
+	glColor3f(0.18, 0.8, 0.44);
+}
+void colorOrange(){
+	glColor3f(0.83,0.33,0);
+}
+void colorDeepOrange(){
+	glColor3f(0.95, 0.61, 0.07);
+}
+void colorBackground(){
+	glClearColor(0.13, 0.13, 0.13,1.0);
+}
+void drawTankPart1(){ 
 	if (isWire){
 		glBegin(GL_LINE_STRIP);
 	}
@@ -38,41 +51,41 @@ void drawTankPart1(){
 		glBegin(GL_QUADS);
 	}
 
-	glColor3f(0.0, 0.7, 0.2);
+	colorDeepGreen();
 	glVertex3f(-1.0f, 0.0f, -1.0f); //bottom
 	glVertex3f(1.0f, 0.0f, -1.0f);
 	glVertex3f(-1.0f, 0.0f, 3.0f);
 	glVertex3f(1.0f, 0.0f, 3.0f);
 
-	glColor3f(0.0, 0.3, 0.0);
+	
 	glVertex3f(-1.0f, 0.0f, -1.0f); //back
 	glVertex3f(1.0f, 0.0f, -1.0f);
-	glColor3f(0.0, 0.7, 0.2);
+	colorGreen();
 	glVertex3f(1.0f, 0.8f, -1.0f);
 	glVertex3f(-1.0f, 0.8f, -1.0f);
 
-	glColor3f(0.0, 0.0, 0.2);
+	colorDeepGreen();
 	glVertex3f(-1.0f, 0.0f, -1.0f); //left 
 	glVertex3f(-1.0f, 0.0f, 3.0f);
-	glColor3f(0.0, 0.0, 0.0);
+	colorGreen();
 	glVertex3f(-1.0f, 0.8f, 2.5f);
 	glVertex3f(-1.0f, 0.8f, -1.0f);
 
-	glColor3f(0.0, 0.3, 0.0);
+	colorDeepGreen();
 	glVertex3f(1.0f, 0.0f, -1.0f); //right
 	glVertex3f(1.0f, 0.0f, 3.0f);
-	glColor3f(0.0, 0.7, 0.2);
+	colorGreen();
 	glVertex3f(1.0f, 0.8f, 2.5f);
 	glVertex3f(1.0f, 0.8f, -1.0f);
 
-	glColor3f(0.0, 0.7, 0.2);
+	colorGreen();
 	glVertex3f(-1.0f, 0.8f, 2.5f); //front
 	glVertex3f(1.0f, 0.8f, 2.5f);
-	glColor3f(0.0, 0.3, 0.0);
+	colorDeepGreen();
 	glVertex3f(1.0f, 0.0f, 3.0f);
 	glVertex3f(-1.0f, 0.0f, 3.0f);
 
-	glColor3f(0.0, 0.7, 0.2);
+	colorGreen();
 	glVertex3f(-1.0f, 0.8f, -1.0f); //top
 	glVertex3f(1.0f, 0.8f, -1.0f);
 	glVertex3f(1.0f, 0.8f, 2.5f);
@@ -88,6 +101,7 @@ void drawTankPart2(){
 	else{
 		glBegin(GL_QUADS);
 	}
+	colorDeepOrange();
 	glVertex3f(-1.0f, 0.8f, -1.0f); //bottom
 	glVertex3f(1.0f, 0.8f, -1.0f);
 	glVertex3f(1.0f, 0.8f, 1.0f);
@@ -95,21 +109,28 @@ void drawTankPart2(){
 
 	glVertex3f(-1.0f, 0.8f, -1.0f); //back
 	glVertex3f(1.0f, 0.8f, -1.0f);
+	colorOrange();
 	glVertex3f(0.5f, 1.8f, -0.5f);
 	glVertex3f(-0.5f, 1.8f, -0.5f);
 
+	colorDeepOrange();
 	glVertex3f(-1.0f, 0.8f, -1.0f); //left 
 	glVertex3f(-1.0f, 0.8f, 1.0f);
+	colorOrange();
 	glVertex3f(-0.5f, 1.8f, 1.0f);
 	glVertex3f(-0.5f, 1.8f, -0.5f);
 
+	colorDeepOrange();
 	glVertex3f(1.0f, 0.8f, -1.0f); //right
 	glVertex3f(1.0f, 0.8f, 1.0f);
+	colorOrange();
 	glVertex3f(0.5f, 1.8f, 1.0f);
 	glVertex3f(0.5f, 1.8f, -0.5f);
 
+	colorDeepOrange();
 	glVertex3f(-1.0f, 0.8f, 1.0f); //front
 	glVertex3f(1.0f, 0.8f, 1.0f);
+	colorOrange();
 	glVertex3f(0.5f, 1.8f, 1.0f);
 	glVertex3f(-0.5f, 1.8f, 1.0f);
 
@@ -123,13 +144,14 @@ void drawTankPart2(){
 }
 
 void drawTankPart3(){
+	glColor3f(0.61,0.35,0.71);
 	GLUquadricObj* qobj = gluNewQuadric();
 	if (isWire) gluQuadricDrawStyle(qobj, GLU_LINE);
 	gluCylinder(qobj, 0.2f, 0.2f, 2.5f, 40, 40);
 }
 void drawGrid(){
 	glBegin(GL_LINES);
-	for (GLfloat i = -radisOfMap; i <= radisOfMap; i = i + 1){ // draw the 
+	for (GLfloat i = -radisOfMap; i <= radisOfMap; i = i + 1){ // draw the map
 		glVertex3f(radisOfMap, 0.0f, i);
 		glVertex3f(-radisOfMap, 0.0f, i);
 		glVertex3f(i, 0.0f, radisOfMap);
@@ -142,48 +164,49 @@ void myDisplay(void)
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	
-	glMatrixMode(GL_MODELVIEW);
+	colorBackground();
+
+	glMatrixMode(GL_MODELVIEW); // camera lookat
 	glLoadIdentity();
 	gluLookAt(camera.x, camera.y, camera.z, center.x, center.y, center.z, up.x, up.y, up.z);
 
-	glBegin(GL_LINES);
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_LINES);  //define a 0,1,0 vector to display the original point
+	glColor3f(0.75f, 0.22f, 0.17f);
 	glVertex3f(0.0, 10.0f, 0.0);
 	glVertex3f(0.0, -10.0f, 0.0);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glEnd();
-	//grids
+
+	// draw grids
 	glPushMatrix();
 	drawGrid();
 	glPopMatrix();
 
+	//draw the tank part 1; and traslate the tank
 	glPushMatrix();
-		glTranslatef(0, 0, tankX);
+		glTranslatef(0, 0, tankZ);
 		drawTankPart1();
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(0 , 0, tankX);
+	glTranslatef(0 , 0, tankZ);
 	glRotatef(rotateCount, 0.0, 1.0, 0.0); //rotate
-	glTranslatef(0, 0, -tankX);
-	glTranslatef(0, 0, tankX);
+	glTranslatef(0, 0, -tankZ);
+	glTranslatef(0, 0, tankZ);
 	drawTankPart2();
 	glPopMatrix();
 
 	
 	glPushMatrix();
 	
-	glTranslatef(0.0f, 1.2f, tankX+1.0f);
+	glTranslatef(0.0f, 1.2f, tankZ+1.0f);
 	glRotatef(rotateCylinder, 1.0, 0.0, 0.0);
-	glTranslatef(0.0f, -1.2f, -(tankX+1.0f));
+	glTranslatef(0.0f, -1.2f, -(tankZ+1.0f));
 
-	glTranslatef(0, 1.2f, tankX);
+	glTranslatef(0, 1.2f, tankZ);
 	glRotatef(rotateCount, 0.0, 1.0, 0.0); //rotate
-	glTranslatef(0, -1.2f, -tankX);
-	glTranslatef(0, 1.2f, tankX+1.0f);
+	glTranslatef(0, -1.2f, -tankZ);
+	glTranslatef(0, 1.2f, tankZ+1.0f);
 	drawTankPart3();
 	
 	glPopMatrix();
@@ -196,37 +219,35 @@ void myKeyboard(unsigned char key, int x, int y){
 	switch (key)
 	{
 	case 'f':
-		if (tankX < radisOfMap - 3.0f ){
-			tankX += 1.0;
+		if (tankZ < radisOfMap - 3.0f ){
+			tankZ += 1.0;
 		}
 		if (isFPS){
 			camera.x = 0.0;
 			camera.y = 3.0;
-			camera.z = tankX;
+			camera.z = tankZ;
 			center.x = 0.0;
 			center.y = 2.0;
-			center.z = tankX + 3.0;
+			center.z = tankZ + 3.0;
 		}
 		break;
 	case 'b':
-		if (tankX > - ( radisOfMap-1.0f )){
-			tankX -= 1.0;
+		if (tankZ > - ( radisOfMap-1.0f )){
+			tankZ -= 1.0;
 		}
 		if (isFPS){
 			camera.x = 0.0;
 			camera.y = 3.0;
-			camera.z = tankX;
+			camera.z = tankZ;
 			center.x = 0.0;
 			center.y = 2.0;
-			center.z = tankX + 3.0;
+			center.z = tankZ + 3.0;
 		}
 		break;
 	case 'r':
-		tankX = 0.0;
-		tankY = 0.0;
+		tankZ = 0.0;
 		rotateCount = 0.0;
 		rotateCylinder = 0.0;
-		prevPosition = 0.0;
 		break;
 	case 'w':
 		isWire = !isWire;
@@ -245,16 +266,22 @@ void myKeyboard(unsigned char key, int x, int y){
 		}
 		break;
 	case 'h':
-		camera.x += 1.0;
+		camera.y -= 1.0;
 		break;
 	case 'j':
 		camera.y += 1.0;
 		break;
 	case 'k':
-		camera.z += 1.0;
+		camera.z -= 1.0;
 		break;
 	case 'l':
-		camera.z -= 1.0f;
+		camera.z += 1.0f;
+		break;
+	case 'o':
+		camera.x -= 1.0f;
+		break;
+	case 'p':
+		camera.x += 1.0f;
 		break;
 	case 'm':
 		isFPS = !isFPS;
@@ -262,15 +289,21 @@ void myKeyboard(unsigned char key, int x, int y){
 		{
 			camera.x = 0.0;
 			camera.y = 3.0;
-			camera.z = tankX;
+			camera.z = tankZ;
 			center.x = 0.0;
 			center.y = 2.0;
-			center.z = tankX + 3.0;
+			center.z = tankZ + 3.0;
+		}
+		else{
+			camera = { 20.0, 10.0, 5.0 }; // the init camera position
+			center = { 0, 0, 0 }; // the camera look center
+			up = { 0, 1, 0 };  // the upward vector
 		}
 			break;
 		default:
 			break;
 	}
+	printf("%f,%f,%f\n", camera.x, camera.y, camera.z);
 	glutPostRedisplay();
 }
 void myReshape(int width, int height){
@@ -291,15 +324,13 @@ void init(void)
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
-	glMatrixMode(GL_PROJECTION);
+
+	glMatrixMode(GL_PROJECTION); // set the perspective function
 	glLoadIdentity();
 	float aspect = SCREEN_WIDTH / (float)SCREEN_HEIGHT;
-	gluPerspective(fov,aspect,zNear,zFar);
-
+	gluPerspective(fov,aspect,zNear,zFar); 
 
 	
-	
-
 }
 
 
